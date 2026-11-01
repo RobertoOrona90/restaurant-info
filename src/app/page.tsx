@@ -1,103 +1,130 @@
 import Image from "next/image";
+import { BottomNav } from "@/components/BottomNav";
+import { PopularCard } from "@/components/DishCard";
+import { MenuExplorer } from "@/components/MenuExplorer";
+import { dishes, restaurant } from "@/data/menu";
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const popular = dishes.filter((d) => d.popular);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
+  return (
+    <>
+      <main className="mx-auto max-w-5xl px-4 pb-32 pt-6">
+        <header id="inicio" className="flex items-center justify-between">
+          <div>
+            <p className="text-sm text-muted">📍 {restaurant.address.split(",").slice(-2).join(",").trim()}</p>
+            <h1 className="mt-1 text-2xl font-extrabold sm:text-3xl">
+              {restaurant.name}
+            </h1>
+            <p className="text-sm text-muted">{restaurant.tagline}</p>
+          </div>
           <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            href={`tel:${restaurant.phone.replace(/\D/g, "")}`}
+            className="grid h-12 w-12 place-items-center rounded-full bg-surface text-xl shadow-sm ring-1 ring-black/5"
+            aria-label="Llamar al restaurante"
           >
+            📞
+          </a>
+        </header>
+
+        <section className="relative mt-6 overflow-hidden rounded-3xl bg-dark text-white">
+          <div className="relative z-10 max-w-[60%] p-6 sm:p-8">
+            <span className="rounded-full bg-brand px-3 py-1 text-xs font-bold uppercase tracking-wide">
+              Promoción
+            </span>
+            <h2 className="mt-3 text-2xl font-extrabold sm:text-3xl">{restaurant.promo.title}</h2>
+            <p className="mt-2 text-sm text-white/80">{restaurant.promo.text}</p>
+            <a
+              href="#menu"
+              className="mt-4 inline-block rounded-full bg-white px-5 py-2 text-sm font-bold text-dark transition hover:bg-brand-soft"
+            >
+              Ver menú
+            </a>
+          </div>
+          <div className="absolute inset-y-0 right-0 w-1/2">
             <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+              src={restaurant.promo.image}
+              alt={restaurant.promo.title}
+              fill
+              priority
+              sizes="50vw"
+              className="object-cover"
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            <div className="absolute inset-0 bg-gradient-to-r from-dark via-dark/40 to-transparent" />
+          </div>
+        </section>
+
+        <section className="mt-8">
+          <div className="flex items-baseline justify-between">
+            <h2 className="text-xl font-extrabold">Los más populares 🔥</h2>
+          </div>
+          <div className="no-scrollbar -mx-4 mt-4 flex gap-4 overflow-x-auto px-4 pb-2">
+            {popular.map((dish) => (
+              <PopularCard key={dish.slug} dish={dish} />
+            ))}
+          </div>
+        </section>
+
+        <div className="mt-8">
+          <MenuExplorer />
         </div>
+
+        <section id="info" className="mt-12 scroll-mt-4">
+          <h2 className="text-xl font-extrabold">Visítanos</h2>
+          <div className="mt-4 grid gap-4 md:grid-cols-2">
+            <div className="relative h-56 overflow-hidden rounded-3xl md:h-full">
+              <Image
+                src={restaurant.coverImage}
+                alt={`Interior de ${restaurant.name}`}
+                fill
+                sizes="(min-width: 768px) 50vw, 100vw"
+                className="object-cover"
+              />
+            </div>
+            <div className="space-y-4 rounded-3xl bg-surface p-6 shadow-sm ring-1 ring-black/5">
+              <div>
+                <h3 className="font-bold">🕒 Horario</h3>
+                <ul className="mt-2 space-y-1 text-sm">
+                  {restaurant.hours.map((h) => (
+                    <li key={h.days} className="flex justify-between gap-4">
+                      <span className="text-muted">{h.days}</span>
+                      <span className="font-semibold">{h.time}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h3 className="font-bold">📍 Dirección</h3>
+                <a
+                  href={`https://maps.google.com/?q=${encodeURIComponent(restaurant.address)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-1 block text-sm text-muted underline-offset-2 hover:underline"
+                >
+                  {restaurant.address}
+                </a>
+              </div>
+              <div>
+                <h3 className="font-bold">📞 Contacto</h3>
+                <p className="mt-1 text-sm text-muted">
+                  {restaurant.phone} · {restaurant.email}
+                </p>
+              </div>
+              <a
+                href={`tel:${restaurant.phone.replace(/\D/g, "")}`}
+                className="block rounded-full bg-brand py-3 text-center font-bold text-white shadow-md shadow-brand/30 transition hover:brightness-110"
+              >
+                Llama y reserva tu mesa
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <footer className="mt-12 text-center text-xs text-muted">
+          © {new Date().getFullYear()} {restaurant.name}. Precios sujetos a cambio.
+        </footer>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      <BottomNav />
+    </>
   );
 }
